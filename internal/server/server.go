@@ -1,4 +1,4 @@
-package dragchat
+package server
 
 import (
 	"context"

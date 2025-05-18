@@ -1,13 +1,15 @@
-package handler
+package rest
 
 import (
+	"github.com/TimNikolaev/drag-chat/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
+	service *service.Service
 }
 
-func New() *Handler {
+func NewHandler() *Handler {
 	return &Handler{}
 }
 
@@ -27,7 +29,6 @@ func (h *Handler) InitRouts() *gin.Engine {
 			chats.GET("/", h.getChats)
 		}
 	}
-	router.Group("/ws", h.connecting)
 
 	return router
 }
