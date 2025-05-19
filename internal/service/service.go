@@ -1,15 +1,29 @@
 package service
 
-import "github.com/TimNikolaev/drag-chat/internal/repository"
+import (
+	"github.com/TimNikolaev/drag-chat/internal/models"
+	"github.com/TimNikolaev/drag-chat/internal/repository"
+)
+
+type Authorization interface {
+}
+
+type Chat interface {
+}
+
+type Chatting interface {
+	Publish(chatID int64, message models.Message) error
+	Subscribe(chatIDs ...int64) error
+}
 
 type Service struct {
-	repository.AuthRepository
-	repository.ChatRepository
+	Authorization
+	Chat
+	Chatting
 }
 
 func New(repository *repository.Repository) *Service {
 	return &Service{
-		AuthRepository: repository.AuthRepository,
-		ChatRepository: repository.ChatRepository,
+		Chatting: NewChattingService(repository.Chatting),
 	}
 }

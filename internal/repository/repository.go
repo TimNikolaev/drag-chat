@@ -2,16 +2,20 @@ package repository
 
 import "github.com/TimNikolaev/drag-chat/internal/models"
 
-type AuthRepository interface {
+type Authorization interface {
 }
 
-type ChatRepository interface {
+type Chat interface {
 	CreateChat() *models.Chat
 }
 
+type Chatting interface {
+}
+
 type Repository struct {
-	AuthRepository
-	ChatRepository
+	Authorization
+	Chat
+	Chatting
 }
 
 func New() *Repository {

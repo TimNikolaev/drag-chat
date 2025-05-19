@@ -7,12 +7,15 @@ import (
 )
 
 type WSHandler struct {
-	*service.Service
+	service.Chatting
 	upgrader *websocket.Upgrader
 }
 
-func NewWSHandler(upgrader *websocket.Upgrader) *WSHandler {
-	return &WSHandler{upgrader: upgrader}
+func NewWSHandler(service *service.Service, upgrader *websocket.Upgrader) *WSHandler {
+	return &WSHandler{
+		Chatting: service.Chatting,
+		upgrader: upgrader,
+	}
 }
 
 func (ws *WSHandler) InitConnectRout() *gin.Engine {

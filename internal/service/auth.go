@@ -3,9 +3,9 @@ package service
 import "github.com/TimNikolaev/drag-chat/internal/repository"
 
 type AuthService struct {
-	repository.AuthRepository
+	repository.Authorization
 }
 
-func NewAuthService(repo repository.AuthRepository) *AuthService {
-	return &AuthService{AuthRepository: repo}
+func NewAuthService(repo repository.Authorization) *AuthService {
+	return &AuthService{Authorization: repo}
 }
