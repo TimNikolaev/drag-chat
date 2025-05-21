@@ -1,6 +1,9 @@
 package repository
 
-import "github.com/TimNikolaev/drag-chat/internal/models"
+import (
+	"github.com/TimNikolaev/drag-chat/internal/models"
+	"github.com/TimNikolaev/drag-chat/internal/repository/postgres"
+)
 
 type Authorization interface {
 }
@@ -10,6 +13,7 @@ type Chat interface {
 }
 
 type Chatting interface {
+	GetChats(userID uint64) ([]models.Chat, error)
 }
 
 type Repository struct {
@@ -19,5 +23,7 @@ type Repository struct {
 }
 
 func New() *Repository {
-	return &Repository{}
+	return &Repository{
+		Chatting: postgres.NewChattingRepository(),
+	}
 }

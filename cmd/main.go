@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -9,13 +10,19 @@ import (
 	"github.com/TimNikolaev/drag-chat/internal/repository"
 	"github.com/TimNikolaev/drag-chat/internal/server"
 	"github.com/TimNikolaev/drag-chat/internal/service"
+	"github.com/TimNikolaev/drag-chat/pkg/event/redis"
 	"github.com/gorilla/websocket"
 )
 
 func main() {
+	redisClient, err := redis.InitRedis(context.Background(), "1652")
+	if err != nil {
+		log.Fatalf("fail to initialization redis %s\n", err.Error())
+	}
+
 	repository := repository.New()
 
-	service := service.New(repository)
+	service := service.New(repository, redisClient)
 
 	restHandler := rest.NewHandler(service)
 
@@ -28,12 +35,12 @@ func main() {
 
 	go func() {
 		if err := srv.Run("8081", wsHandler.InitConnectRout()); err != nil {
-			log.Fatalf("error occurred while running WS server: %s", err.Error())
+			log.Fatalf("error occurred while running WS server: %s\n", err.Error())
 		}
 	}()
 
 	if err := srv.Run("8080", restHandler.InitRouts()); err != nil {
-		log.Fatalf("error occurred while running REST server: %s", err.Error())
+		log.Fatalf("error occurred while running REST server: %s\n", err.Error())
 	}
 
 }

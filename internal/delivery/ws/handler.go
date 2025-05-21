@@ -20,7 +20,7 @@ func NewWSHandler(service *service.Service, upgrader *websocket.Upgrader) *WSHan
 
 func (ws *WSHandler) InitConnectRout() *gin.Engine {
 	router := gin.New()
-	router.GET("/ws", ws.Connecting)
+	router.GET("/ws", ws.chatting)
 
 	return router
 }
