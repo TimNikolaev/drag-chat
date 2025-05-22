@@ -1,6 +1,8 @@
 package ws
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -33,6 +35,8 @@ func (ws *WSHandler) chatting(c *gin.Context) {
 	ws.Chatting.Subscribe(chatsIDs...)
 
 	go getMessages(ws, conn)
+
+	getHistory(ws, conn, chatsIDs)
 }
 
 type messageRequest struct {
@@ -42,12 +46,13 @@ type messageRequest struct {
 	Text   string `json:"text"`
 }
 
-func getMessages(ws *WSHandler, conn *websocket.Conn) error {
+func getMessages(ws *WSHandler, conn *websocket.Conn) {
 	for {
 		var msgInput messageRequest
 
 		if err := conn.ReadJSON(&msgInput); err != nil {
-			return err
+			log.Print(err)
+			break
 		}
 
 		msg := models.Message{
@@ -59,7 +64,25 @@ func getMessages(ws *WSHandler, conn *websocket.Conn) error {
 		}
 
 		if err := ws.Chatting.Publish(msg); err != nil {
-			return err
+			log.Print(err)
+		}
+
+	}
+
+}
+
+func getHistory(ws *WSHandler, conn *websocket.Conn, chatsIDs []uint64) {
+	for _, chatID := range chatsIDs {
+		historyMsgs, err := ws.GetHistory(chatID)
+		if err == nil {
+			for _, h := range historyMsgs {
+				var msg models.Message
+				if err := json.Unmarshal([]byte(h), &msg); err != nil {
+					conn.WriteJSON(msg)
+				}
+
+			}
+
 		}
 
 	}

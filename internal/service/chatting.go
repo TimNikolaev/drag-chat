@@ -18,13 +18,17 @@ func NewChattingService(repo repository.Chatting, rClient *redis.Client) *Chatti
 	return &ChattingService{Chatting: repo}
 }
 
+var ctx = context.Background()
+
 func (s *ChattingService) GetChats(userID uint64) ([]models.Chat, error) {
 	return s.Chatting.GetChats(userID)
 }
 
-func (s *ChattingService) Publish(msg models.Message) error {
-	ctx := context.Background()
+func (s *ChattingService) GetHistory(chatID uint64) ([]string, error) {
+	return s.rClient.LRange(ctx, string(rune(chatID)), 0, -1).Result()
+}
 
+func (s *ChattingService) Publish(msg models.Message) error {
 	msgByteJSON, err := json.Marshal(msg)
 	if err != nil {
 		return err

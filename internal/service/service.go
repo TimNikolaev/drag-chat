@@ -14,6 +14,7 @@ type Chat interface {
 
 type Chatting interface {
 	GetChats(userID uint64) ([]models.Chat, error)
+	GetHistory(uint64) ([]string, error)
 	Publish(message models.Message) error
 	Subscribe(chatIDs ...uint64) error
 }

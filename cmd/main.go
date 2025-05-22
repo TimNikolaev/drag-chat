@@ -14,6 +14,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+/*
+Разобраться в context.
+Разобраться в Redis list.
+Разобратся с обработкой ошибок в горутине.
+*/
+
 func main() {
 	redisClient, err := redis.InitRedis(context.Background(), "1652")
 	if err != nil {
