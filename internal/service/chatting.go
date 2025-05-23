@@ -24,8 +24,8 @@ func (s *ChattingService) GetChats(userID uint64) ([]models.Chat, error) {
 	return s.Chatting.GetChats(userID)
 }
 
-func (s *ChattingService) GetHistory(chatID uint64) ([]string, error) {
-	return s.rClient.LRange(ctx, string(rune(chatID)), 0, -1).Result()
+func (s *ChattingService) GetHistory(chatID string) ([]string, error) {
+	return s.rClient.LRange(ctx, chatID, 0, -1).Result()
 }
 
 func (s *ChattingService) Publish(msg models.Message) error {
@@ -43,6 +43,6 @@ func (s *ChattingService) Publish(msg models.Message) error {
 	return nil
 }
 
-func (s *ChattingService) Subscribe(chatIDs ...uint64) error {
-	return nil
+func (s *ChattingService) Subscribe(chatIDs []string) *redis.PubSub {
+	return s.rClient.Subscribe(ctx, chatIDs...)
 }

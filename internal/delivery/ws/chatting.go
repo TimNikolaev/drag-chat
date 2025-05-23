@@ -27,16 +27,16 @@ func (ws *WSHandler) chatting(c *gin.Context) {
 		return
 	}
 
-	chatsIDs := []uint64{}
-	for _, chat := range chats {
-		chatsIDs = append(chatsIDs, chat.ID)
+	chatIDsString := []string{}
+	for _, chatID := range chats {
+		chatIDsString = append(chatIDsString, string(rune(chatID.ID)))
 	}
 
-	ws.Chatting.Subscribe(chatsIDs...)
+	go sendMessages(ws, conn)
 
-	go getMessages(ws, conn)
+	getHistory(ws, conn, chatIDsString)
 
-	getHistory(ws, conn, chatsIDs)
+	getMessages(ws, conn, chatIDsString)
 }
 
 type messageRequest struct {
@@ -46,7 +46,7 @@ type messageRequest struct {
 	Text   string `json:"text"`
 }
 
-func getMessages(ws *WSHandler, conn *websocket.Conn) {
+func sendMessages(ws *WSHandler, conn *websocket.Conn) {
 	for {
 		var msgInput messageRequest
 
@@ -71,7 +71,7 @@ func getMessages(ws *WSHandler, conn *websocket.Conn) {
 
 }
 
-func getHistory(ws *WSHandler, conn *websocket.Conn, chatsIDs []uint64) {
+func getHistory(ws *WSHandler, conn *websocket.Conn, chatsIDs []string) {
 	for _, chatID := range chatsIDs {
 		historyMsgs, err := ws.GetHistory(chatID)
 		if err == nil {
@@ -87,4 +87,28 @@ func getHistory(ws *WSHandler, conn *websocket.Conn, chatsIDs []uint64) {
 
 	}
 
+}
+
+func getMessages(ws *WSHandler, conn *websocket.Conn, chatIDsString []string) {
+	for {
+		pubsub := ws.Chatting.Subscribe(chatIDsString)
+
+		defer pubsub.Close()
+
+		chanMessages := pubsub.Channel()
+
+		for msg := range chanMessages {
+			var message models.Message
+
+			if err := json.Unmarshal([]byte(msg.Payload), &message); err != nil {
+				log.Printf("error decoding message: %v", err)
+				continue
+			}
+
+			if err := conn.WriteJSON(message); err != nil {
+				log.Printf("error sending message: %v", err)
+				break
+			}
+		}
+	}
 }
