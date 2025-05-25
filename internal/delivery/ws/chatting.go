@@ -63,7 +63,7 @@ func sendMessages(ws *WSHandler, conn *websocket.Conn) {
 			Time:   time.Now(),
 		}
 
-		if err := ws.Chatting.Publish(msg); err != nil {
+		if err := ws.Chatting.Publish(&msg); err != nil {
 			log.Print(err)
 		}
 

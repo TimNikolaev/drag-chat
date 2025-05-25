@@ -28,7 +28,7 @@ func (s *ChattingService) GetHistory(chatID string) ([]string, error) {
 	return s.rClient.LRange(ctx, chatID, 0, -1).Result()
 }
 
-func (s *ChattingService) Publish(msg models.Message) error {
+func (s *ChattingService) Publish(msg *models.Message) error {
 	msgByteJSON, err := json.Marshal(msg)
 	if err != nil {
 		return err
