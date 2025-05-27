@@ -56,11 +56,11 @@ func sendMessages(ws *WSHandler, conn *websocket.Conn) {
 		}
 
 		msg := models.Message{
-			ID:     msgInput.ID,
-			ChatID: msgInput.ChatID,
-			UserID: msgInput.UserID,
-			Text:   msgInput.Text,
-			Time:   time.Now(),
+			ID:       msgInput.ID,
+			ChatID:   msgInput.ChatID,
+			UserID:   msgInput.UserID,
+			Text:     msgInput.Text,
+			SendTime: time.Now(),
 		}
 
 		if err := ws.Chatting.Publish(&msg); err != nil {

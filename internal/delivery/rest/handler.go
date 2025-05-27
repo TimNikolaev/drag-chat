@@ -31,6 +31,11 @@ func (h *Handler) InitRouts() *gin.Engine {
 		{
 			chats.POST("/", h.createChat)
 			chats.GET("/", h.getChats)
+
+			messages := chats.Group(":id/messages")
+			{
+				messages.GET("/", h.getMessages)
+			}
 		}
 	}
 
