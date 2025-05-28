@@ -8,6 +8,7 @@ import (
 	"github.com/TimNikolaev/drag-chat/internal/delivery/rest"
 	"github.com/TimNikolaev/drag-chat/internal/delivery/ws"
 	"github.com/TimNikolaev/drag-chat/internal/repository"
+	"github.com/TimNikolaev/drag-chat/internal/repository/postgres"
 	"github.com/TimNikolaev/drag-chat/internal/server"
 	"github.com/TimNikolaev/drag-chat/internal/service"
 	"github.com/TimNikolaev/drag-chat/pkg/event/redis"
@@ -21,12 +22,16 @@ import (
 */
 
 func main() {
+	db, err := postgres.New("")
+	if err != nil {
+		log.Fatalf("failed to initialization db: %s\n", err.Error())
+	}
 	redisClient, err := redis.InitRedis(context.Background(), "1652")
 	if err != nil {
 		log.Fatalf("fail to initialization redis %s\n", err.Error())
 	}
 
-	repository := repository.New()
+	repository := repository.New(db)
 
 	service := service.New(repository, redisClient)
 

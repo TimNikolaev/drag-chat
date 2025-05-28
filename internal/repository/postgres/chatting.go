@@ -1,14 +1,18 @@
 package postgres
 
-import "github.com/TimNikolaev/drag-chat/internal/models"
+import (
+	"github.com/TimNikolaev/drag-chat/internal/models"
+	"github.com/jmoiron/sqlx"
+)
 
 type ChattingRepository struct {
+	db *sqlx.DB
 }
 
-func NewChattingRepository() *ChattingRepository {
-	return &ChattingRepository{}
+func NewChattingRepository(db *sqlx.DB) *ChattingRepository {
+	return &ChattingRepository{db: db}
 }
 
-func (r *ChattingRepository) GetChats(userID uint64) ([]models.Chat, error) {
+func (r *ChattingRepository) GetChats(userID uint) ([]models.Chat, error) {
 	return nil, nil
 }

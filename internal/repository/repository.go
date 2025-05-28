@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/TimNikolaev/drag-chat/internal/models"
 	"github.com/TimNikolaev/drag-chat/internal/repository/postgres"
+	"github.com/jmoiron/sqlx"
 )
 
 type Authorization interface {
@@ -13,7 +14,7 @@ type Chat interface {
 }
 
 type Chatting interface {
-	GetChats(userID uint64) ([]models.Chat, error)
+	GetChats(userID uint) ([]models.Chat, error)
 }
 
 type Repository struct {
@@ -22,8 +23,8 @@ type Repository struct {
 	Chatting
 }
 
-func New() *Repository {
+func New(db *sqlx.DB) *Repository {
 	return &Repository{
-		Chatting: postgres.NewChattingRepository(),
+		Chatting: postgres.NewChattingRepository(db),
 	}
 }

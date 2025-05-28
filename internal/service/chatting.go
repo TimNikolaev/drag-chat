@@ -20,7 +20,7 @@ func NewChattingService(repo repository.Chatting, rClient *redis.Client) *Chatti
 
 var ctx = context.Background()
 
-func (s *ChattingService) GetChats(userID uint64) ([]models.Chat, error) {
+func (s *ChattingService) GetChats(userID uint) ([]models.Chat, error) {
 	return s.Chatting.GetChats(userID)
 }
 
