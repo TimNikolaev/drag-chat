@@ -6,10 +6,10 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func InitRedis(ctx context.Context, port string) (*redis.Client, error) {
+func InitRedis(ctx context.Context, port, password string) (*redis.Client, error) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:" + port,
-		Password: "",
+		Password: password,
 		DB:       0,
 	})
 

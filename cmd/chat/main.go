@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to initialization db: %s\n", err.Error())
 	}
-	redisClient, err := redis.InitRedis(context.Background(), "1652")
+	redisClient, err := redis.InitRedis(context.Background(), "1652", "")
 	if err != nil {
 		log.Fatalf("fail to initialization redis %s\n", err.Error())
 	}
