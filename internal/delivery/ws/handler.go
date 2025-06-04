@@ -11,7 +11,7 @@ type WSHandler struct {
 	upgrader *websocket.Upgrader
 }
 
-func NewWSHandler(service *service.Service, upgrader *websocket.Upgrader) *WSHandler {
+func New(service *service.Service, upgrader *websocket.Upgrader) *WSHandler {
 	return &WSHandler{
 		Chatting: service.Chatting,
 		upgrader: upgrader,

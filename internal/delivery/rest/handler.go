@@ -10,7 +10,7 @@ type Handler struct {
 	service.Chat
 }
 
-func NewHandler(service *service.Service) *Handler {
+func New(service *service.Service) *Handler {
 	return &Handler{
 		Authorization: service.Authorization,
 		Chat:          service.Chat,

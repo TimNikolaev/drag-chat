@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/TimNikolaev/drag-chat/internal/config"
 	"github.com/TimNikolaev/drag-chat/internal/delivery/rest"
 	"github.com/TimNikolaev/drag-chat/internal/delivery/ws"
 	"github.com/TimNikolaev/drag-chat/internal/repository"
@@ -22,11 +23,17 @@ import (
 */
 
 func main() {
-	db, err := postgres.New("")
+	cfg, err := config.Init()
+	if err != nil {
+		log.Fatalf("error initialization configs: %s\n", err.Error())
+	}
+
+	db, err := postgres.New(cfg.DSN)
 	if err != nil {
 		log.Fatalf("failed to initialization db: %s\n", err.Error())
 	}
-	redisClient, err := redis.InitRedis(context.Background(), "1652", "")
+
+	redisClient, err := redis.New(context.Background(), cfg.Redis.Port, cfg.Redis.Password)
 	if err != nil {
 		log.Fatalf("fail to initialization redis %s\n", err.Error())
 	}
@@ -35,22 +42,22 @@ func main() {
 
 	service := service.New(repository, redisClient)
 
-	restHandler := rest.NewHandler(service)
+	restHandler := rest.New(service)
 
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
-	wsHandler := ws.NewWSHandler(service, &upgrader)
+	wsHandler := ws.New(service, &upgrader)
 
 	srv := new(server.Server)
 
 	go func() {
-		if err := srv.Run("8081", wsHandler.InitConnectRout()); err != nil {
+		if err := srv.Run(cfg.Api.WSPort, wsHandler.InitConnectRout()); err != nil {
 			log.Fatalf("error occurred while running WS server: %s\n", err.Error())
 		}
 	}()
 
-	if err := srv.Run("8080", restHandler.InitRouts()); err != nil {
+	if err := srv.Run(cfg.Api.RestPort, restHandler.InitRouts()); err != nil {
 		log.Fatalf("error occurred while running REST server: %s\n", err.Error())
 	}
 

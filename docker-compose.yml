@@ -1,29 +1,12 @@
-version: '3.8'
-
 services:
-  redis:
-    image: redis:latest
-    restart: no
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-    volumes:
-      - redis_data:/data/redis
-    ports:
-      - 6379:6379
-
   db:
     image: postgres:latest
-    restart: no
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: your_user
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: your_db_name
-      PGDATA: /data/postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - postgres_data:/data/postgres
+      - ./postgres_data:/data/postgres
     ports:
       - 5438:5432
-
-volumes:
-  redis_data:
-  postgres_data:
