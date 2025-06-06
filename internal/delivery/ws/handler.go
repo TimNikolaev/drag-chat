@@ -1,6 +1,8 @@
 package ws
 
 import (
+	"net/http"
+
 	"github.com/TimNikolaev/drag-chat/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -11,10 +13,12 @@ type WSHandler struct {
 	upgrader *websocket.Upgrader
 }
 
-func New(service *service.Service, upgrader *websocket.Upgrader) *WSHandler {
+func New(service *service.Service) *WSHandler {
 	return &WSHandler{
 		Chatting: service.Chatting,
-		upgrader: upgrader,
+		upgrader: &websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool { return true },
+		},
 	}
 }
 

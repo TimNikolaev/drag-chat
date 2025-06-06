@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
 
 	"github.com/TimNikolaev/drag-chat/internal/config"
 	"github.com/TimNikolaev/drag-chat/internal/delivery/rest"
@@ -13,7 +12,7 @@ import (
 	"github.com/TimNikolaev/drag-chat/internal/server"
 	"github.com/TimNikolaev/drag-chat/internal/service"
 	"github.com/TimNikolaev/drag-chat/pkg/event/redis"
-	"github.com/gorilla/websocket"
+	_ "github.com/lib/pq"
 )
 
 /*
@@ -44,10 +43,7 @@ func main() {
 
 	restHandler := rest.New(service)
 
-	upgrader := websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool { return true },
-	}
-	wsHandler := ws.New(service, &upgrader)
+	wsHandler := ws.New(service)
 
 	srv := new(server.Server)
 
