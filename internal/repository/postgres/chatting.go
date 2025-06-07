@@ -14,5 +14,10 @@ func NewChattingRepository(db *sqlx.DB) *ChattingRepository {
 }
 
 func (r *ChattingRepository) GetChats(userID uint) ([]models.Chat, error) {
-	return nil, nil
+	chat := models.Chat{
+		ID:       1,
+		ChatName: "10Б",
+	}
+	chats := []models.Chat{chat}
+	return chats, nil
 }

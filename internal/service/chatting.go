@@ -15,7 +15,7 @@ type ChattingService struct {
 }
 
 func NewChattingService(repo repository.Chatting, rClient *redis.Client) *ChattingService {
-	return &ChattingService{Chatting: repo}
+	return &ChattingService{Chatting: repo, rClient: rClient}
 }
 
 var ctx = context.Background()

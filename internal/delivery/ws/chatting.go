@@ -54,6 +54,8 @@ func sendMessages(ws *WSHandler, conn *websocket.Conn) {
 			log.Print(err)
 			break
 		}
+		// messages, _, _ := conn.ReadMessage()
+		// fmt.Println(messages)
 
 		msg := models.Message{
 			ID:       msgInput.ID,
