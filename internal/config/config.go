@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	Auth
-	Postgres
-	Redis
-	Api
+	Auth     Auth
+	Postgres Postgres
+	Redis    Redis
+	Api      Api
 }
 
 type Auth struct {

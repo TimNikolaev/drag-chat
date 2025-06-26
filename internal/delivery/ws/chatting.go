@@ -23,7 +23,7 @@ func (ws *WSHandler) chatting(c *gin.Context) {
 
 	chats, err := ws.Chatting.GetChats(uint(userID))
 	if err != nil {
-		response.NewError(c, http.StatusInternalServerError, err.Error())
+		//error handling and client notification using ws
 		return
 	}
 
@@ -51,11 +51,9 @@ func sendMessages(ws *WSHandler, conn *websocket.Conn) {
 		var msgInput messageRequest
 
 		if err := conn.ReadJSON(&msgInput); err != nil {
-			log.Print(err)
-			break
+			log.Print(err) //error logging
+			continue
 		}
-		// messages, _, _ := conn.ReadMessage()
-		// fmt.Println(messages)
 
 		msg := models.Message{
 			ID:       msgInput.ID,
@@ -66,7 +64,8 @@ func sendMessages(ws *WSHandler, conn *websocket.Conn) {
 		}
 
 		if err := ws.Chatting.Publish(&msg); err != nil {
-			log.Print(err)
+			//error handling and client notification using ws
+			continue
 		}
 
 	}
@@ -75,14 +74,12 @@ func sendMessages(ws *WSHandler, conn *websocket.Conn) {
 
 func getHistory(ws *WSHandler, conn *websocket.Conn, chatsIDs []string) {
 	for _, chatID := range chatsIDs {
-		historyMsgs, err := ws.GetHistory(chatID)
+		historyMsgs, err := ws.Chatting.GetHistory(chatID)
 		if err == nil {
 			for _, h := range historyMsgs {
 				var msg models.Message
-				if err := json.Unmarshal([]byte(h), &msg); err != nil {
-					conn.WriteJSON(msg)
-				}
-
+				json.Unmarshal([]byte(h), &msg)
+				conn.WriteJSON(msg)
 			}
 
 		}

@@ -27,9 +27,9 @@ func main() {
 		log.Fatalf("error initialization configs: %s\n", err.Error())
 	}
 
-	db, err := postgres.New(cfg.DSN)
+	db, err := postgres.New(cfg.Postgres.DSN)
 	if err != nil {
-		log.Fatalf("failed to initialization db: %s\n", err.Error())
+		log.Fatalf("fail to initialization db: %s\n", err.Error())
 	}
 
 	redisClient, err := redis.New(context.Background(), cfg.Redis.Port, cfg.Redis.Password)

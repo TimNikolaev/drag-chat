@@ -9,7 +9,7 @@ import (
 )
 
 type WSHandler struct {
-	service.Chatting
+	Chatting service.Chatting
 	upgrader *websocket.Upgrader
 }
 
@@ -17,7 +17,9 @@ func New(service *service.Service) *WSHandler {
 	return &WSHandler{
 		Chatting: service.Chatting,
 		upgrader: &websocket.Upgrader{
-			CheckOrigin: func(r *http.Request) bool { return true },
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin:     func(r *http.Request) bool { return true },
 		},
 	}
 }
