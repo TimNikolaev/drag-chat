@@ -29,16 +29,16 @@ func (s *ChattingService) GetHistory(chatID string) ([]string, error) {
 }
 
 func (s *ChattingService) Publish(msg *models.Message) error {
-	msgByteJSON, err := json.Marshal(msg)
+	msgJSON, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
 
-	if err := s.rClient.Publish(ctx, string(rune(msg.ChatID)), msgByteJSON).Err(); err != nil {
+	if err := s.rClient.Publish(ctx, string(rune(msg.ChatID)), msgJSON).Err(); err != nil {
 		return err
 	}
 
-	s.rClient.LPush(ctx, string(rune(msg.ChatID)), msgByteJSON)
+	s.rClient.LPush(ctx, string(rune(msg.ChatID)), msgJSON)
 
 	return nil
 }

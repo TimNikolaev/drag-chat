@@ -5,8 +5,7 @@ import (
 	"log"
 
 	"github.com/TimNikolaev/drag-chat/internal/config"
-	"github.com/TimNikolaev/drag-chat/internal/delivery/rest"
-	"github.com/TimNikolaev/drag-chat/internal/delivery/ws"
+	"github.com/TimNikolaev/drag-chat/internal/delivery"
 	"github.com/TimNikolaev/drag-chat/internal/repository"
 	"github.com/TimNikolaev/drag-chat/internal/repository/postgres"
 	"github.com/TimNikolaev/drag-chat/internal/server"
@@ -39,21 +38,19 @@ func main() {
 
 	repository := repository.New(db)
 
-	service := service.New(repository, redisClient)
+	service := service.New(repository, redisClient, &cfg.Auth)
 
-	restHandler := rest.New(service)
-
-	wsHandler := ws.New(service)
+	controller := delivery.New(service)
 
 	srv := new(server.Server)
 
 	go func() {
-		if err := srv.Run(cfg.Api.WSPort, wsHandler.InitConnectRout()); err != nil {
+		if err := srv.Run(cfg.Api.WSPort, controller.InitWSRouts()); err != nil {
 			log.Fatalf("error occurred while running WS server: %s\n", err.Error())
 		}
 	}()
 
-	if err := srv.Run(cfg.Api.RestPort, restHandler.InitRouts()); err != nil {
+	if err := srv.Run(cfg.Api.RestPort, controller.InitRouts()); err != nil {
 		log.Fatalf("error occurred while running REST server: %s\n", err.Error())
 	}
 

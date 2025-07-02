@@ -7,6 +7,8 @@ import (
 )
 
 type Authorization interface {
+	CreateUser(user *models.User) (uint, error)
+	GetUser(email, password string) (*models.User, error)
 }
 
 type Chat interface {
@@ -25,6 +27,7 @@ type Repository struct {
 
 func New(db *sqlx.DB) *Repository {
 	return &Repository{
-		Chatting: postgres.NewChattingRepository(db),
+		Authorization: postgres.NewAuthRepository(db),
+		Chatting:      postgres.NewChattingRepository(db),
 	}
 }

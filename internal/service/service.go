@@ -1,12 +1,16 @@
 package service
 
 import (
+	"github.com/TimNikolaev/drag-chat/internal/config"
 	"github.com/TimNikolaev/drag-chat/internal/models"
 	"github.com/TimNikolaev/drag-chat/internal/repository"
 	"github.com/go-redis/redis/v8"
 )
 
 type Authorization interface {
+	CreateUser(user *models.User) (uint, error)
+	GenerateToken(email, password string) (string, error)
+	ParseToken(accessToken string) (int, error)
 }
 
 type Chat interface {
@@ -25,8 +29,9 @@ type Service struct {
 	Chatting
 }
 
-func New(repository *repository.Repository, rClient *redis.Client) *Service {
+func New(repository *repository.Repository, rClient *redis.Client, cfg *config.Auth) *Service {
 	return &Service{
-		Chatting: NewChattingService(repository.Chatting, rClient),
+		Authorization: NewAuthService(repository.Authorization, cfg),
+		Chatting:      NewChattingService(repository.Chatting, rClient),
 	}
 }
