@@ -1,11 +1,10 @@
-package handlers
+package v1
 
 import (
 	"errors"
 	"net/http"
 	"strings"
 
-	"github.com/TimNikolaev/drag-chat/internal/service"
 	"github.com/TimNikolaev/drag-chat/pkg/response"
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +14,7 @@ const (
 	userCtx             = "userId"
 )
 
-func UserIdentity(auth service.AuthService) gin.HandlerFunc {
+func (h *Handler) UserIdentity() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authedHeader := c.GetHeader(authorizationHeader)
 		if !strings.HasPrefix(authedHeader, "Bearer ") {
@@ -24,7 +23,7 @@ func UserIdentity(auth service.AuthService) gin.HandlerFunc {
 		}
 
 		token := strings.TrimPrefix(authedHeader, "Bearer ")
-		userId, err := auth.ParseToken(token)
+		userId, err := h.authService.ParseToken(token)
 		if err != nil {
 			response.NewError(c, http.StatusUnauthorized, err.Error())
 			return

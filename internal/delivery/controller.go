@@ -1,18 +1,18 @@
 package delivery
 
 import (
-	"github.com/TimNikolaev/drag-chat/internal/delivery/handlers"
+	v1 "github.com/TimNikolaev/drag-chat/internal/delivery/v1"
 	"github.com/TimNikolaev/drag-chat/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type Controller struct {
-	handler *handlers.Handler
+	handler_v1 *v1.Handler
 }
 
 func New(service *service.Service) *Controller {
 	return &Controller{
-		handler: handlers.New(service),
+		handler_v1: v1.New(service),
 	}
 }
 
@@ -21,23 +21,30 @@ func (c *Controller) InitRouts() *gin.Engine {
 
 	api := router.Group("/api")
 	{
-		auth := api.Group("/auth")
+		//v1
+		v1 := api.Group("/v1")
 		{
-			auth.POST("/sign-up", c.handler.SignUp)
-			auth.POST("/sign-in", c.handler.SignIn)
-		}
-		chats := api.Group("/chats")
-		{
-			chats.POST("/", c.handler.CreateChat)
-			chats.GET("/", c.handler.GetChats)
-
-			messages := chats.Group(":id/messages")
+			auth := v1.Group("/auth")
 			{
-				messages.GET("/", c.handler.GetMessages)
-				messages.PUT("/:id", c.handler.UpdateMessage)
-				messages.DELETE("/:id", c.handler.DeleteMessage)
+				auth.POST("/sign-up", c.handler_v1.SignUp)
+				auth.POST("/sign-in", c.handler_v1.SignIn)
+			}
+
+			chats := v1.Group("/chats", c.handler_v1.UserIdentity())
+			{
+				chats.POST("/", c.handler_v1.CreateChat)
+				chats.GET("/", c.handler_v1.GetChats)
+
+				messages := chats.Group(":id/messages")
+				{
+					messages.GET("/", c.handler_v1.GetMessages)
+					messages.PUT("/:id", c.handler_v1.UpdateMessage)
+					messages.DELETE("/:id", c.handler_v1.DeleteMessage)
+				}
 			}
 		}
+
+		//v....
 	}
 
 	return router
@@ -45,7 +52,7 @@ func (c *Controller) InitRouts() *gin.Engine {
 
 func (c *Controller) InitWSRouts() *gin.Engine {
 	router := gin.New()
-	router.GET("/ws", c.handler.Chatting)
+	router.GET("/ws", c.handler_v1.UserIdentity(), c.handler_v1.Chatting)
 
 	return router
 }

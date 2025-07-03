@@ -1,4 +1,4 @@
-package handlers
+package v1
 
 import (
 	"encoding/json"
@@ -39,16 +39,9 @@ func (h *Handler) Chatting(c *gin.Context) {
 	h.getMessages(conn, chatIDsString)
 }
 
-type messageRequest struct {
-	ID     uint   `json:"message_id"`
-	ChatID uint   `json:"chat_id"`
-	UserID uint   `json:"user_id"`
-	Text   string `json:"text"`
-}
-
 func (h *Handler) sendMessages(conn *websocket.Conn) {
 	for {
-		var msgInput messageRequest
+		var msgInput models.MessageRequest
 
 		if err := conn.ReadJSON(&msgInput); err != nil {
 			//error logging
