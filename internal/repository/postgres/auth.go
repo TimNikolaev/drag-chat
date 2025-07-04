@@ -29,6 +29,12 @@ func (r *AuthRepository) CreateUser(user *models.User) (uint, error) {
 	return userID, nil
 }
 
-func (r *AuthRepository) GetUser(email, password string) (*models.User, error) {
-	return nil, nil
+func (r *AuthRepository) GetUser(email, password_hash string) (*models.User, error) {
+	var user models.User
+
+	query := fmt.Sprintf("SELECT id FROM %s WHERE email=$1 AND password_hash=$2 ", usersTable)
+
+	err := r.db.Get(&user, query, email, password_hash)
+
+	return &user, err
 }
