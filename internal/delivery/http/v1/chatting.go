@@ -12,7 +12,10 @@ import (
 )
 
 func (h *Handler) Chatting(c *gin.Context) {
-	userID := 12 // Simulated authentication
+	userID, err := GetUserID(c)
+	if err != nil {
+		return
+	}
 
 	conn, err := h.upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {

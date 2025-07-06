@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/TimNikolaev/drag-chat/internal/config"
-	"github.com/TimNikolaev/drag-chat/internal/delivery"
+	"github.com/TimNikolaev/drag-chat/internal/delivery/http"
 	"github.com/TimNikolaev/drag-chat/internal/repository"
 	"github.com/TimNikolaev/drag-chat/internal/repository/postgres"
 	"github.com/TimNikolaev/drag-chat/internal/server"
@@ -40,7 +40,7 @@ func main() {
 
 	service := service.New(repository, redisClient, &cfg.Auth)
 
-	controller := delivery.New(service)
+	controller := http.New(service)
 
 	srv := new(server.Server)
 

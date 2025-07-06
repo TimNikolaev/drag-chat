@@ -14,6 +14,7 @@ type Authorization interface {
 }
 
 type Chat interface {
+	CreateChat(userID uint, companionUserName string) (*models.Chat, error)
 }
 
 type Chatting interface {
@@ -32,6 +33,7 @@ type Service struct {
 func New(repository *repository.Repository, rClient *redis.Client, cfg *config.Auth) *Service {
 	return &Service{
 		Authorization: NewAuthService(repository.Authorization, cfg),
+		Chat:          NewChatService(repository.Chat),
 		Chatting:      NewChattingService(repository.Chatting, rClient),
 	}
 }
