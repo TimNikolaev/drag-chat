@@ -6,13 +6,21 @@ import (
 )
 
 type ChatService struct {
-	repository.Chat
+	chatRepository repository.Chat
 }
 
 func NewChatService(repo repository.Chat) *ChatService {
-	return &ChatService{Chat: repo}
+	return &ChatService{chatRepository: repo}
 }
 
-func (s *ChatService) CreateChat(userID uint, companionUserName string) (*models.Chat, error) {
-	return nil, nil
+func (s *ChatService) CreateChat(userID uint, companionUserNames []string, chatName string) (*models.Chat, error) {
+	var companionIDs []uint
+	for _, name := range companionUserNames {
+		companion, err := s.chatRepository.GetUserByUserName(name)
+		if err != nil {
+			return nil, err
+		}
+		companionIDs = append(companionIDs, companion.ID)
+	}
+	return s.chatRepository.CreateChat(userID, companionIDs, chatName)
 }

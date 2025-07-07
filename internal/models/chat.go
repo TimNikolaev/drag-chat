@@ -5,6 +5,7 @@ type Chat struct {
 	ChatName string `json:"chat_name"`
 }
 
-type RequestPersonalChat struct {
-	CompanionUserName string `json:"companion_user_name"`
+type CreateChatRequest struct {
+	CompanionUserNames []string `json:"companion_user_names"`
+	ChatName           string   `json:"chat_name"`
 }

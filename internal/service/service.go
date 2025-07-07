@@ -14,7 +14,7 @@ type Authorization interface {
 }
 
 type Chat interface {
-	CreateChat(userID uint, companionUserName string) (*models.Chat, error)
+	CreateChat(userID uint, companionUserNames []string, chatName string) (*models.Chat, error)
 }
 
 type Chatting interface {

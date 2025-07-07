@@ -10,18 +10,18 @@ import (
 )
 
 type ChattingService struct {
-	repository.Chatting
-	rClient *redis.Client
+	chatting repository.Chatting
+	rClient  *redis.Client
 }
 
 func NewChattingService(repo repository.Chatting, rClient *redis.Client) *ChattingService {
-	return &ChattingService{Chatting: repo, rClient: rClient}
+	return &ChattingService{chatting: repo, rClient: rClient}
 }
 
 var ctx = context.Background()
 
 func (s *ChattingService) GetChats(userID uint) ([]models.Chat, error) {
-	return s.Chatting.GetChats(userID)
+	return s.chatting.GetChats(userID)
 }
 
 func (s *ChattingService) GetHistory(chatID string) ([]string, error) {

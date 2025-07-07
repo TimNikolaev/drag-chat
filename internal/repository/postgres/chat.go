@@ -15,10 +15,10 @@ func NewChatRepository(db *sqlx.DB) *ChatRepository {
 	}
 }
 
-func (r *ChatRepository) CreateChat(userID, companionID uint) (*models.Chat, error) {
+func (r *ChatRepository) CreateChat(userID uint, companionID []uint, chatName string) (*models.Chat, error) {
 	return nil, nil
 }
 
-func (r *ChatRepository) GetChatIDByUserName(userName string) (uint, error) {
-	return 0, nil
+func (r *ChatRepository) GetUserByUserName(userName string) (*models.User, error) {
+	return nil, nil
 }

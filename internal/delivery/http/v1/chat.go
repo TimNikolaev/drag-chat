@@ -14,20 +14,20 @@ func (h *Handler) CreateChat(c *gin.Context) {
 		return
 	}
 
-	var input models.RequestPersonalChat
+	var input models.CreateChatRequest
 
 	if err := c.BindJSON(&input); err != nil {
 		response.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	chat, err := h.chatService.CreateChat(uint(userID), input.CompanionUserName)
+	chat, err := h.chatService.CreateChat(uint(userID), input.CompanionUserNames, input.ChatName)
 	if err != nil {
 		response.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(200, chat)
+	c.JSON(http.StatusOK, map[string]any{"chat": chat})
 
 }
 

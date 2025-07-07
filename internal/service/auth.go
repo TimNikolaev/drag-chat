@@ -11,23 +11,23 @@ import (
 )
 
 type AuthService struct {
-	repository.Authorization
+	auth   repository.Authorization
 	config *config.Auth
 }
 
 func NewAuthService(repo repository.Authorization, cfg *config.Auth) *AuthService {
-	return &AuthService{Authorization: repo, config: cfg}
+	return &AuthService{auth: repo, config: cfg}
 }
 
 const salt = "qwerty123456789"
 
 func (s *AuthService) CreateUser(user *models.User) (uint, error) {
 	user.Password = generatePasswordHash(user.Password)
-	return s.Authorization.CreateUser(user)
+	return s.auth.CreateUser(user)
 }
 
 func (s *AuthService) GenerateToken(email, password string) (string, error) {
-	user, err := s.Authorization.GetUser(email, generatePasswordHash(password))
+	user, err := s.auth.GetUser(email, generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}
