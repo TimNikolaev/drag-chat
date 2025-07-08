@@ -15,12 +15,12 @@ func NewChatService(repo repository.Chat) *ChatService {
 
 func (s *ChatService) CreateChat(userID uint, companionUserNames []string, chatName string) (*models.Chat, error) {
 	var companionIDs []uint
-	for _, name := range companionUserNames {
-		companion, err := s.chatRepository.GetUserByUserName(name)
+	for _, uname := range companionUserNames {
+		id, err := s.chatRepository.GetUserIDByUserName(uname)
 		if err != nil {
 			return nil, err
 		}
-		companionIDs = append(companionIDs, companion.ID)
+		companionIDs = append(companionIDs, id)
 	}
 	return s.chatRepository.CreateChat(userID, companionIDs, chatName)
 }
