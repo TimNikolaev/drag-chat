@@ -6,6 +6,6 @@ type Chat struct {
 }
 
 type CreateChatRequest struct {
-	CompanionUserNames []string `json:"companion_user_names"`
-	ChatName           string   `json:"chat_name"`
+	CompanionUserNames []string `json:"companion_user_names" binding:"required"`
+	ChatName           string   `json:"chat_name" binding:"required"`
 }

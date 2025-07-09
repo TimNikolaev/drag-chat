@@ -31,10 +31,12 @@ func (r *ChatRepository) CreateChat(userID uint, companionIDs []uint, chatName s
 		return nil, err
 	}
 
-	query = fmt.Sprintf("INSERT INTO %s (user_id, chat_id) values ($1, $2)", usersChatsTable)
-	for _, id := range companionIDs {
-		if _, err := tx.Exec(query, id, chat.ID); err != nil {
-			return nil, err
+	if companionIDs != nil {
+		query = fmt.Sprintf("INSERT INTO %s (user_id, chat_id) values ($1, $2)", usersChatsTable)
+		for _, id := range companionIDs {
+			if _, err := tx.Exec(query, id, chat.ID); err != nil {
+				return nil, err
+			}
 		}
 	}
 
