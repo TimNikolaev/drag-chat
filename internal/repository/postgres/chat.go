@@ -56,3 +56,7 @@ func (r *ChatRepository) GetUserIDByUserName(userName string) (uint, error) {
 
 	return userID, err
 }
+
+func (r *ChatRepository) GetChats(userID uint) ([]models.Chat, error) {
+	return nil, nil
+}

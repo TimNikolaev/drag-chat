@@ -9,3 +9,7 @@ type CreateChatRequest struct {
 	CompanionUserNames []string `json:"companion_user_names" binding:"required"`
 	ChatName           string   `json:"chat_name" binding:"required"`
 }
+
+type GetChatsResponse struct {
+	Data []Chat `json:"data"`
+}

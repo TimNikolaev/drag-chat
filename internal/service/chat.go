@@ -28,3 +28,7 @@ func (s *ChatService) CreateChat(userID uint, companionUserNames []string, chatN
 
 	return s.chatRepository.CreateChat(userID, companionIDs, chatName)
 }
+
+func (s *ChatService) GetChats(userID uint) ([]models.Chat, error) {
+	return s.chatRepository.GetChats(userID)
+}

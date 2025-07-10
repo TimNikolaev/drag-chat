@@ -32,7 +32,20 @@ func (h *Handler) CreateChat(c *gin.Context) {
 }
 
 func (h *Handler) GetChats(c *gin.Context) {
+	userID, err := GetUserID(c)
+	if err != nil {
+		return
+	}
 
+	chats, err := h.chatService.GetChats(uint(userID))
+	if err != nil {
+		response.NewError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, models.GetChatsResponse{
+		Data: chats,
+	})
 }
 
 func (h *Handler) GetMessages(c *gin.Context) {
