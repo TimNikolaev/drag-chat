@@ -17,20 +17,14 @@ type Chat interface {
 	GetChats(userID uint) ([]models.Chat, error)
 }
 
-type Chatting interface {
-	GetChats(userID uint) ([]models.Chat, error)
-}
-
 type Repository struct {
 	Authorization
 	Chat
-	Chatting
 }
 
 func New(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: postgres.NewAuthRepository(db),
 		Chat:          postgres.NewChatRepository(db),
-		Chatting:      postgres.NewChattingRepository(db),
 	}
 }

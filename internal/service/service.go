@@ -35,6 +35,6 @@ func New(repository *repository.Repository, rClient *redis.Client, cfg *config.A
 	return &Service{
 		Authorization: NewAuthService(repository.Authorization, cfg),
 		Chat:          NewChatService(repository.Chat),
-		Chatting:      NewChattingService(repository.Chatting, rClient),
+		Chatting:      NewChattingService(repository.Chat, rClient),
 	}
 }

@@ -33,11 +33,9 @@ func (r *ChatRepository) CreateChat(userID uint, companionIDs []uint, chatName s
 
 	queryCreateUsersChats := fmt.Sprintf("INSERT INTO %s (user_id, chat_id) values ($1, $2)", usersChatsTable)
 
-	if companionIDs != nil {
-		for _, id := range companionIDs {
-			if _, err := tx.Exec(queryCreateUsersChats, id, chat.ID); err != nil {
-				return nil, err
-			}
+	for _, id := range companionIDs {
+		if _, err := tx.Exec(queryCreateUsersChats, id, chat.ID); err != nil {
+			return nil, err
 		}
 	}
 
