@@ -26,21 +26,22 @@ func (r *ChatRepository) CreateChat(userID uint, companionIDs []uint, chatName s
 	}
 	defer tx.Rollback()
 
-	query := fmt.Sprintf("INSERT INTO %s (chat_name) values ($1) RETURNING *", chatsTable)
-	if err := tx.QueryRow(query, chatName).Scan(&chat); err != nil {
+	queryCreateChat := fmt.Sprintf("INSERT INTO %s (chat_name) values ($1) RETURNING *", chatsTable)
+	if err := tx.QueryRow(queryCreateChat, chatName).Scan(&chat); err != nil {
 		return nil, err
 	}
 
+	queryCreateUsersChats := fmt.Sprintf("INSERT INTO %s (user_id, chat_id) values ($1, $2)", usersChatsTable)
+
 	if companionIDs != nil {
-		query = fmt.Sprintf("INSERT INTO %s (user_id, chat_id) values ($1, $2)", usersChatsTable)
 		for _, id := range companionIDs {
-			if _, err := tx.Exec(query, id, chat.ID); err != nil {
+			if _, err := tx.Exec(queryCreateUsersChats, id, chat.ID); err != nil {
 				return nil, err
 			}
 		}
 	}
 
-	if _, err := tx.Exec(query, userID, chat.ID); err != nil {
+	if _, err := tx.Exec(queryCreateUsersChats, userID, chat.ID); err != nil {
 		return nil, err
 	}
 
@@ -58,5 +59,13 @@ func (r *ChatRepository) GetUserIDByUserName(userName string) (uint, error) {
 }
 
 func (r *ChatRepository) GetChats(userID uint) ([]models.Chat, error) {
-	return nil, nil
+	var chats []models.Chat
+
+	query := fmt.Sprintf("SELECT c.id, c.name FROM %s c JOIN %s uc ON c.id = uc.chat_id WHERE uc.user_id=$1", chatsTable, usersChatsTable)
+
+	if err := r.db.Select(&chats, query, userID); err != nil {
+		return nil, err
+	}
+
+	return chats, nil
 }
