@@ -3,7 +3,6 @@ package v1
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/TimNikolaev/drag-chat/internal/models"
 	"github.com/TimNikolaev/drag-chat/pkg/response"
@@ -35,31 +34,29 @@ func (h *Handler) Chatting(c *gin.Context) {
 		chatIDsString = append(chatIDsString, string(rune(chat.ID)))
 	}
 
-	go h.sendMessages(conn)
+	go h.sendMessage(conn)
 
 	h.getHistory(conn, chatIDsString)
 
 	h.getMessages(conn, chatIDsString)
 }
 
-func (h *Handler) sendMessages(conn *websocket.Conn) {
+func (h *Handler) sendMessage(conn *websocket.Conn) {
 	for {
-		var msgInput models.MessageRequest
+		var input models.SendMessageRequest
 
-		if err := conn.ReadJSON(&msgInput); err != nil {
+		if err := conn.ReadJSON(&input); err != nil {
 			//error logging
 			continue
 		}
 
-		msg := models.Message{
-			ID:       msgInput.ID,
-			ChatID:   msgInput.ChatID,
-			UserID:   msgInput.UserID,
-			Text:     msgInput.Text,
-			SendTime: time.Now(),
+		msg, err := h.chattingService.CreateMessage(input.ChatID, input.SenderID, input.Text)
+		if err != nil {
+			//error handling and client notification using ws
+			continue
 		}
 
-		if err := h.chattingService.Publish(&msg); err != nil {
+		if err := h.chattingService.Publish(msg); err != nil {
 			//error handling and client notification using ws
 			continue
 		}

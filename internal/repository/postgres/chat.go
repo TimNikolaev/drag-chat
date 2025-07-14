@@ -67,3 +67,19 @@ func (r *ChatRepository) GetChats(userID uint) ([]models.Chat, error) {
 
 	return chats, nil
 }
+
+func (r *ChatRepository) CreateMessage(chatID uint, senderID uint, text string) (*models.Message, error) {
+	var message models.Message
+
+	query := fmt.Sprintf("INSERT INTO %s (chat_id, sender_id, text_body) VALUES ($1, $2, $3) RETURNING *", messagesTable)
+
+	if err := r.db.QueryRow(query, chatID, senderID, text).Scan(&message); err != nil {
+		return nil, err
+	}
+
+	return &message, nil
+}
+
+func (r *ChatRepository) GetMessages(userID uint, chatID uint) ([]models.Message, error) {
+	return nil, nil
+}

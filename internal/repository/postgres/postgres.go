@@ -6,7 +6,7 @@ const (
 	usersTable      = "users"
 	chatsTable      = "chats"
 	usersChatsTable = "users_chats"
-	messagesTable   = "message"
+	messagesTable   = "messages"
 )
 
 func New(dsn string) (*sqlx.DB, error) {

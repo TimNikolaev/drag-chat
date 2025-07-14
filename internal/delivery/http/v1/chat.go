@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/TimNikolaev/drag-chat/internal/models"
 	"github.com/TimNikolaev/drag-chat/pkg/response"
@@ -49,7 +50,26 @@ func (h *Handler) GetChats(c *gin.Context) {
 }
 
 func (h *Handler) GetMessages(c *gin.Context) {
+	userID, err := GetUserID(c)
+	if err != nil {
+		return
+	}
 
+	chatID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	messages, err := h.chatService.GetMessages(uint(userID), uint(chatID))
+	if err != nil {
+		response.NewError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, models.GetMessagesResponse{
+		Data: messages,
+	})
 }
 
 func (h *Handler) UpdateMessage(c *gin.Context) {

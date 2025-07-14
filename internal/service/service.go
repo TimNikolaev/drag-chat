@@ -16,11 +16,13 @@ type Authorization interface {
 type Chat interface {
 	CreateChat(userID uint, companionUserNames []string, chatName string) (*models.Chat, error)
 	GetChats(userID uint) ([]models.Chat, error)
+	GetMessages(userID uint, chatID uint) ([]models.Message, error)
 }
 
 type Chatting interface {
 	GetChats(userID uint) ([]models.Chat, error)
 	GetHistory(string) ([]string, error)
+	CreateMessage(chatID, senderID uint, text string) (*models.Message, error)
 	Publish(message *models.Message) error
 	Subscribe(chatIDs []string) *redis.PubSub
 }
