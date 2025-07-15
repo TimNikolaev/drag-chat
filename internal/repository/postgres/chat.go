@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/TimNikolaev/drag-chat/internal/models"
@@ -27,6 +28,7 @@ func (r *ChatRepository) CreateChat(userID uint, companionIDs []uint, chatName s
 	defer tx.Rollback()
 
 	queryCreateChat := fmt.Sprintf("INSERT INTO %s (chat_name) values ($1) RETURNING *", chatsTable)
+
 	if err := tx.QueryRow(queryCreateChat, chatName).Scan(&chat); err != nil {
 		return nil, err
 	}
@@ -81,5 +83,25 @@ func (r *ChatRepository) CreateMessage(chatID uint, senderID uint, text string) 
 }
 
 func (r *ChatRepository) GetMessages(userID uint, chatID uint) ([]models.Message, error) {
-	return nil, nil
+	var exists bool
+
+	queryExists := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s c JOIN %s uc ON c.id = uc.chat_id WHERE uc.user_id=$1 AND uc.chat_id=$2)", chatsTable, usersChatsTable)
+
+	if err := r.db.QueryRow(queryExists, userID, chatID).Scan(&exists); err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		return nil, errors.New("row not exists")
+	}
+
+	var messages []models.Message
+
+	queryGetMessages := fmt.Sprintf("SELECT * FROM %s WHERE chat_id=$1", messagesTable)
+
+	if err := r.db.Select(&messages, queryGetMessages, chatID); err != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }
