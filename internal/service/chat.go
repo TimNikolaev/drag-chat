@@ -36,3 +36,7 @@ func (s *ChatService) GetChats(userID uint) ([]models.Chat, error) {
 func (s *ChatService) GetMessages(userID uint, chatID uint) ([]models.Message, error) {
 	return s.chatRepository.GetMessages(userID, chatID)
 }
+
+func (s *ChatService) DeleteMessage(userID, chatID uint, messageID uint64) error {
+	return s.chatRepository.DeleteMessage(userID, chatID, messageID)
+}

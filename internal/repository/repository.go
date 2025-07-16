@@ -17,6 +17,7 @@ type Chat interface {
 	GetChats(userID uint) ([]models.Chat, error)
 	CreateMessage(chatID uint, senderID uint, text string) (*models.Message, error)
 	GetMessages(userID uint, chatID uint) ([]models.Message, error)
+	DeleteMessage(userID, chatID uint, messageID uint64) error
 }
 
 type Repository struct {

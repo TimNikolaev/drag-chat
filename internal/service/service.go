@@ -17,6 +17,7 @@ type Chat interface {
 	CreateChat(userID uint, companionUserNames []string, chatName string) (*models.Chat, error)
 	GetChats(userID uint) ([]models.Chat, error)
 	GetMessages(userID uint, chatID uint) ([]models.Message, error)
+	DeleteMessage(userID, chatID uint, messageID uint64) error
 }
 
 type Chatting interface {

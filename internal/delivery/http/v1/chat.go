@@ -55,7 +55,7 @@ func (h *Handler) GetMessages(c *gin.Context) {
 		return
 	}
 
-	chatID, err := strconv.Atoi(c.Param("id"))
+	chatID, err := strconv.Atoi(c.Param("chat_id"))
 	if err != nil {
 		response.NewError(c, http.StatusBadRequest, err.Error())
 		return
@@ -77,5 +77,27 @@ func (h *Handler) UpdateMessage(c *gin.Context) {
 }
 
 func (h *Handler) DeleteMessage(c *gin.Context) {
+	userID, err := GetUserID(c)
+	if err != nil {
+		return
+	}
 
+	chatID, err := strconv.Atoi(c.Param("chat_id"))
+	if err != nil {
+		response.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	messageID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.chatService.DeleteMessage(uint(userID), uint(chatID), uint64(messageID)); err != nil {
+		response.NewError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, response.StatusResponse{Status: "ok"})
 }

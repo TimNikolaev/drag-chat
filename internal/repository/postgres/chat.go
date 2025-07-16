@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/TimNikolaev/drag-chat/internal/models"
@@ -92,7 +91,7 @@ func (r *ChatRepository) GetMessages(userID uint, chatID uint) ([]models.Message
 	}
 
 	if !exists {
-		return nil, errors.New("row not exists")
+		return nil, fmt.Errorf("user %d is not a member of chat %d", userID, chatID)
 	}
 
 	var messages []models.Message
@@ -104,4 +103,24 @@ func (r *ChatRepository) GetMessages(userID uint, chatID uint) ([]models.Message
 	}
 
 	return messages, nil
+}
+
+func (r *ChatRepository) DeleteMessage(userID, chatID uint, messageID uint64) error {
+	var exists bool
+
+	queryExists := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s c JOIN %s uc ON c.id = uc.chat_id WHERE uc.user_id=$1 AND uc.chat_id=$2)", chatsTable, usersChatsTable)
+
+	if err := r.db.QueryRow(queryExists, userID, chatID).Scan(&exists); err != nil {
+		return err
+	}
+
+	if !exists {
+		return fmt.Errorf("user %d is not a member of chat %d", userID, chatID)
+	}
+
+	queryDeleteMessage := fmt.Sprintf("DELETE FROM %s WHERE id=$1 AND chat_id=$2 AND sender_id=$3", messagesTable)
+
+	_, err := r.db.Exec(queryDeleteMessage, messageID, chatID, userID)
+
+	return err
 }
