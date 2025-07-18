@@ -16,17 +16,17 @@ CREATE TABLE chats
 CREATE TABLE users_chats
 (
   user_id int references users (id) on delete cascade not null,
-  chat_id int references chats (id) on delete cascade not null
+  chat_id int references chats (id) on delete cascade not null,
   primary key (user_id, chat_id)
 );
 
 CREATE TABLE messages
 (
-  id bigserial,
-  chat_id int references chats (id) on delete cascade not null,
+  id bigint,
+  chat_id int references chats (id) on delete cascade,
   sender_id int references users (id) on delete cascade not null,
   text_body text not null,
   is_edited boolean default false,
-  send_time timestamp default now()
-  primary key (id, chat_id)
+  send_time timestamp default now(),
+  primary key (chat_id, id)
 );
