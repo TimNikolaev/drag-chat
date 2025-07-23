@@ -11,6 +11,7 @@ CREATE TABLE chats
 (
   id serial primary key,
   chat_name varchar(255) not null unique
+  messages_count bigint not null
 );
 
 CREATE TABLE users_chats
