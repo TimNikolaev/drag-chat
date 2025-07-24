@@ -24,7 +24,11 @@ func (r *ChatRepository) CreateChat(userID uint, companionIDs []uint, chatName s
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
 
 	queryCreateChat := fmt.Sprintf("INSERT INTO %s (chat_name) values ($1) RETURNING *", chatsTable)
 
@@ -44,7 +48,11 @@ func (r *ChatRepository) CreateChat(userID uint, companionIDs []uint, chatName s
 		return nil, err
 	}
 
-	return &chat, tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return &chat, nil
 }
 
 func (r *ChatRepository) GetUserIDByUserName(userName string) (uint, error) {
@@ -70,11 +78,39 @@ func (r *ChatRepository) GetChats(userID uint) ([]models.Chat, error) {
 }
 
 func (r *ChatRepository) CreateMessage(chatID uint, senderID uint, text string) (*models.Message, error) {
+	var messagesCount uint64
+
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	queryGetCount := fmt.Sprintf("SELECT c.messages_count FROM %s c JOIN %s uc ON c.id = uc.chat_id WHERE uc.user_id=$1 AND uc.chat_id=$2 FOR UPDATE", chatsTable, usersChatsTable)
+
+	if err := tx.Get(&messagesCount, queryGetCount, senderID, chatID); err != nil {
+		return nil, err
+	}
+
 	var message models.Message
 
-	query := fmt.Sprintf("INSERT INTO %s (chat_id, sender_id, text_body) VALUES ($1, $2, $3) RETURNING *", messagesTable)
+	queryCreateMessage := fmt.Sprintf("INSERT INTO %s (id, chat_id, sender_id, text_body) VALUES ($1, $2, $3, $4) RETURNING *", messagesTable)
 
-	if err := r.db.QueryRow(query, chatID, senderID, text).Scan(&message); err != nil {
+	if err := tx.QueryRow(queryCreateMessage, messagesCount+1, chatID, senderID, text).Scan(&message); err != nil {
+		return nil, err
+	}
+
+	queryIncrCount := fmt.Sprintf("UPDATE SET %s messages_count = messages_count+1 WHERE id=$1", chatsTable)
+
+	if _, err := tx.Exec(queryIncrCount, chatID); err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
