@@ -38,7 +38,7 @@ func (c *Controller) InitRouts() *gin.Engine {
 				messages := chats.Group(":chat_id/messages")
 				{
 					messages.GET("/", c.handlerV1.GetMessages)
-					messages.PUT("/:id", c.handlerV1.UpdateMessage)
+					messages.PUT("/:id", c.handlerV1.UpdateMessage) //
 					messages.DELETE("/:id", c.handlerV1.DeleteMessage)
 				}
 			}

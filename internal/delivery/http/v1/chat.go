@@ -73,6 +73,37 @@ func (h *Handler) GetMessages(c *gin.Context) {
 }
 
 func (h *Handler) UpdateMessage(c *gin.Context) {
+	userID, err := GetUserID(c)
+	if err != nil {
+		return
+	}
+
+	chatID, err := strconv.Atoi(c.Param("chat_id"))
+	if err != nil {
+		response.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	messageID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var input models.UpdateMessageRequest
+
+	if err := c.BindJSON(&input); err != nil {
+		response.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	message, err := h.chatService.UpdateMessage(uint(chatID), uint64(messageID), uint(userID), input.Text)
+	if err != nil {
+		response.NewError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"updated_message": message})
 
 }
 

@@ -22,3 +22,7 @@ type SendMessageRequest struct {
 type GetMessagesResponse struct {
 	Data []Message `json:"data"`
 }
+
+type UpdateMessageRequest struct {
+	Text string `json:"text_body" binding:"required"`
+}
