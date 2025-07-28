@@ -38,7 +38,7 @@ func (s *ChatService) GetMessages(userID uint, chatID uint) ([]models.Message, e
 }
 
 func (s *ChatService) UpdateMessage(chatID uint, messageID uint64, userID uint, text string) (*models.Message, error) {
-	return nil, nil
+	return s.chatRepository.UpdateMessage(chatID, messageID, userID, text)
 }
 
 func (s *ChatService) DeleteMessage(userID, chatID uint, messageID uint64) error {

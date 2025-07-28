@@ -141,6 +141,30 @@ func (r *ChatRepository) GetMessages(userID uint, chatID uint) ([]models.Message
 	return messages, nil
 }
 
+func (r *ChatRepository) UpdateMessage(chatID uint, messageID uint64, userID uint, text string) (*models.Message, error) {
+	var exists bool
+
+	queryExists := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s c JOIN %s uc ON c.id = uc.chat_id WHERE uc.user_id=$1 AND uc.chat_id=$2)", chatsTable, usersChatsTable)
+
+	if err := r.db.QueryRow(queryExists, userID, chatID).Scan(&exists); err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		return nil, fmt.Errorf("user %d is not a member of chat %d", userID, chatID)
+	}
+
+	var updatedMessage models.Message
+
+	queryUpdateMessage := fmt.Sprintf("UPDATE %s SET text_body = $1, is_edited = 'true' WHERE sender_id = $2 AND chat_id = $3 AND id = $4", messagesTable)
+
+	if err := r.db.QueryRow(queryUpdateMessage, text, userID, chatID, messageID).Scan(&updatedMessage); err != nil {
+		return nil, err
+	}
+
+	return &updatedMessage, nil
+}
+
 func (r *ChatRepository) DeleteMessage(userID, chatID uint, messageID uint64) error {
 	var exists bool
 
