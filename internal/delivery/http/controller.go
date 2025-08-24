@@ -42,17 +42,11 @@ func (c *Controller) InitRouts() *gin.Engine {
 					messages.DELETE("/:id", c.handlerV1.DeleteMessage)
 				}
 			}
+			v1.GET("/ws/chatting", c.handlerV1.UserIdentity(), c.handlerV1.Chatting)
 		}
 
 		//v....
 	}
-
-	return router
-}
-
-func (c *Controller) InitWSRouts() *gin.Engine {
-	router := gin.New()
-	router.GET("/ws", c.handlerV1.UserIdentity(), c.handlerV1.Chatting)
 
 	return router
 }
