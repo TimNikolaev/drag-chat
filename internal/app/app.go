@@ -3,6 +3,9 @@ package app
 import (
 	"context"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/TimNikolaev/drag-chat/internal/config"
 	"github.com/TimNikolaev/drag-chat/internal/delivery/http"
@@ -48,4 +51,15 @@ func (a *App) Run() {
 		}
 	}()
 
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	if err := srv.Stop(context.Background()); err != nil {
+		log.Fatalf("error occurred on server shutting down: %s", err.Error())
+	}
+
+	if err := db.Close(); err != nil {
+		log.Fatalf("error occurred on db connection close: %s", err.Error())
+	}
 }
